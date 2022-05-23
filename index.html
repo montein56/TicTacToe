@@ -21,7 +21,7 @@
 
         <div id="sidebar">
             <button onclick="startGame()" id="start" class="blink btn">START</button>
-            <button onclick="reset()" id="reset" class="btn" disabled>RESET</button>
+            <button onclick="resume()" id="reset" class="btn" disabled>RESET</button>
             <div class="scores" id="P1">Player 1</div>
             <div class="scores" id="P2">Player 2</div>
         </div>
@@ -38,9 +38,26 @@
                 <div class="cell"></div>
                 <div class="cell"></div>
             </div>
+            <form id="formInfo">
+                <div id="formP1">
+                    <label for="playerName1" class="labels">Player 1</label>
+                    <input type="text" id="playerName1" class="inputs" required placeholder="Enter Name*">
+                    <label for="Pl1XO" class="labels"></label>
+                    <input type="text" id="Pl1XO" class="inputs" required placeholder="Enter X or O*">
+                </div>
+                <div id="formP2">
+                    <label for="playerName2" class="labels">Player 2</label>
+                    <input type="text" id="playerName2" class="inputs" required placeholder="Enter Name*">
+                    <label for="Pl2XO" class="labels"></label>
+                    <label for="Pl2XO" id="Pl2XO" class="inputs">Opposite of Player 1</label>
+                </div>
+                <div>
+                    <button type="button" id="btnSave" class="btn" onclick="formSave()">SAVE</button>
+                </div>
+            </form>
         </div>
-
     </container>
+
 </body>
 
 </html>

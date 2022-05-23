@@ -1,35 +1,37 @@
+let form = document.getElementById("formInfo");
+form.style.display = "none";
+
 const Player = (name, choice, score) => {
-    const getName = () => name;
-    const getChoice = () => choice;
+    const getName = name;
+    const getChoice = choice;
     const getScore = score;
     let gameboard = Array(9).fill("");
+    let cells = document.getElementsByClassName("cell");
 
     const clearBoard = () => {
-        let cells = document.getElementsByClassName("cell");
         for (let i = 0; i < cells.length; i++) {
             cells[i].innerText = "";
         };
         gameboard = Array(9).fill("");
-        const listenMain = document.getElementById("main");
+        const listenMain = document.getElementById("board");
         listenMain.outerHTML = listenMain.outerHTML;
     }
 
     const display = () => {
-        let cells = document.getElementsByClassName("cell");
         for (let i = 0; i < cells.length; i++) {
             cells[i].innerText = gameboard[i];
         };
     };
 
     const play = P2 => {
-        document.getElementById("main").addEventListener("click", (test) => {
-            let index = Array.prototype.indexOf.call(test.target.parentNode.children, test.target);
+        document.getElementById("board").addEventListener("click", (test) => {
+            const index = Array.prototype.indexOf.call(test.target.parentNode.children, test.target);
             let mark = "";
             //CHECK ARRAY FOR # OF BLANKS [INDICATES WHETHER X OR O IS NEXT]
             if (gameboard.filter(String).length % 2 == 0) {
                 mark = choice;
             } else {
-                mark = P2.getChoice();
+                mark = P2.getChoice;
             };
             //IF BLANK SQUARE WAS CLICKED...
             if (gameboard[index] == "") {
@@ -48,70 +50,59 @@ const Player = (name, choice, score) => {
                 ((gameboard[2] !== "") && (gameboard[2] == gameboard[4] && gameboard[4] == gameboard[6]))
             ) {
                 //IF A WIN, DISABLE FURTHER CLICKS IN GRID
-                const listenMain = document.getElementById("main");
+                const listenMain = document.getElementById("board");
                 listenMain.outerHTML = listenMain.outerHTML;
-                //FIGURE OUT WHO IS WINNER
+                let play1 = document.getElementById("P1");
+                let play2 = document.getElementById("P2");
+                //FIGURE OUT WHO IS WINNER & DISPLAY IT
                 let winner = "";
                 if (mark == choice) {
                     winner = name;
                     score += 1;
-                    document.getElementById("P1").innerHTML = `${winner} :\nScore = ${score}`;
+                    play1.innerHTML = `<b>${winner}: "${choice}"</b><br>Score = ${score}`;
                 } else {
-                    winner = P2.getName();
+                    winner = P2.getName;
                     P2.getScore += 1;
-                    document.getElementById("P2").innerHTML = `${winner} :\nScore = ${P2.getScore}`;
-                }
+                    play2.innerHTML = `<b>${winner}: "${P2.getChoice}"</b><br>Score = ${P2.getScore}`;
+                }//DECORATE THE WINNER BOXES, BLUE FOR LEADER, RED FOR TRAILER, GREEN FOR TIE
                 if (score > P2.getScore) {
-                    document.getElementById("P1").style.backgroundColor = "blue";
-                    document.getElementById('P1').style.boxShadow = '0 0 6px 6px #0ff';
-
-                    document.getElementById("P2").style.backgroundColor = "red";
+                    play1.style.backgroundColor = "blue";
+                    play1.style.boxShadow = '0 0 6px 6px #0ff';
+                    play2.style.backgroundColor = "red";
                 } else if (P2.getScore > score) {
-                    document.getElementById("P2").style.backgroundColor = "blue";
-                    document.getElementById("P1").style.backgroundColor = "red";
-                    document.getElementById('P2').style.boxShadow = '0 0 6px 6px #0ff';
+                    play2.style.backgroundColor = "blue";
+                    play1.style.backgroundColor = "red";
+                    play2.style.boxShadow = '0 0 6px 6px #0ff';
                 } else if (P2.getScore == score) {
-                    document.getElementById("P1").style.backgroundColor = "green";
-                    document.getElementById("P2").style.backgroundColor = "green";
-
-                    document.getElementById('P1').style.boxShadow = '';
-                    document.getElementById('P2').style.boxShadow = '';
+                    play1.style.backgroundColor = "green";
+                    play2.style.backgroundColor = "green";
+                    play1.style.boxShadow = '';
+                    play2.style.boxShadow = '';
                 };
                 //ANNOUNCE WINNER
                 setTimeout(function () {
                     //CHECK FOR SCORE = 5
                     if (score >= 5 || P2.getScore >= 5) {
-                        alert(`GAME OVER\nThe winner is ${winner} with 5 points\nTo play again hit "START" button`);
+                        play2.innerHTML = `The winner is ${winner} with 5 points.<br><br>To play again hit "RESET" & "START" buttons`;
+                        play1.innerHTML = `GAME OVER`;
                         score = P2.getScore = 0;
                         display();
-                        reset();
-                    } else {
-                        let confirmAction = confirm(`"${winner} has a point"\nSelect OK to continue playing`);
-                        if (confirmAction) {
-                            clearBoard();
-                            play(P2);
-                        } else {
-                            clearBoard();
-                            document.getElementById("start").disabled = false;
-                            document.getElementById("P1").innerHTML = `PLAYER 1`;
-                            document.getElementById("P2").innerHTML = `PLAYER 2`;
-                        };
+                    }//IF BOTH SCORES < 5 PLAY ON
+                    else {
+                        clearBoard();
+                        play(P2);
                     };
-                }, 10);
+                }, 200);
 
-            } else {//CHECK FOR TIE
+            } else {//CHECK FOR TIE : GAMEBOARD IS FULL BUT NO WINNER
                 if (gameboard.filter(String).length > 8) {
                     setTimeout(function () {
-                        let confirmAction = confirm(`TIE GAME\n Select OK to continue playing`);
+                        let confirmAction = confirm(`TIE GAME<br>Select OK to continue playing`);
                         if (confirmAction) {
                             clearBoard();
-                            document.getElementById("start").disabled = true;
                             play(P2);
-                            // document.getElementById("main").addEventListener("click", listeningFunc);
                         } else {
-                            document.getElementById("P1").innerHTML = `PLAYER 1`;
-                            document.getElementById("P2").innerHTML = `PLAYER 2`;
-                            clearBoard();
+                            resume();
                         };
                     }, 10);
                 }
@@ -123,40 +114,77 @@ const Player = (name, choice, score) => {
 }
 
 function startGame() {
-    const Pl1 = prompt("FIRST TO SCORE 5 POINTS WINS THE GAME\nPlayer 1:\nYou are 'X'\nEnter Your Name", "PLAYER 1");
-    const player1 = Player(Pl1, "X", 0);
-    const Pl2 = prompt("Player 2:\nYou are 'O'\nEnter Your Name", "PLAYER 2");
-    const player2 = Player(Pl2, "O", 0);
-
-    // P1.innerHTML = P1;
-    P1.innerHTML = Pl1;
-    P2.innerHTML = Pl2;
+    let board = document.getElementById("board");
+    form.style.display = "grid";
+    board.style.display = "none";
     const start = document.getElementById("start");
     const reset = document.getElementById("reset");
     start.disabled = true;
-    start.classList.remove("blink");
-    start.style.cursor = "not-allowed";
-    start.classList.remove("btn");
-    reset.style.cursor = "pointer";
     reset.disabled = false;
+    start.style.cursor = "not-allowed";
+    reset.style.cursor = "pointer";
+    start.classList.remove("btn");
     reset.classList.add("btn");
+    start.classList.remove("blink");
+    P1.style.display = "grid";
+    P2.style.display = "grid";
+}
+//FORM: AUTO SET PLAYER 2 GAME PIECE BASED ON PLAYER 1'S CHOICE
+let Pl1XO = document.getElementById("Pl1XO");
+let Pl2XO = document.getElementById("Pl2XO");
+Pl1XO.addEventListener("change", () => {
+    if (Pl1XO.value.toUpperCase() == "X") {
+        Pl2XO.innerHTML = "O";
+    } else {
+        Pl2XO.innerHTML = "X";
+    }
+    Pl2XO.disabled = true;
+});
+
+function formSave() {
+    //GET VALUES FROM FORM
+    let playerName1 = document.getElementById("playerName1").value;
+    let playerName2 = document.getElementById("playerName2").value;
+    let Pl1XO = document.getElementById("Pl1XO").value.toUpperCase();
+    let Pl2XO = document.getElementById("Pl2XO");
+    Pl2XO = "";
+
+    if (playerName1 == "" || (Pl1XO != "X" && Pl1XO != "O")) {
+        alert("PLAYER 1\nName and/or choice is missing/incorrect");
+        return;
+    }
+    if (playerName2 == "") {
+        alert("Player 2 - Please enter your name");
+        return;
+    }
+    if (Pl1XO == "X") {
+        Pl2XO = "O";
+    } else {
+        Pl2XO = "X";
+    }//POPULATE THE ANNOUNCE BOARDS WITH PLAYER NAME AND CHOICE
+    P1.innerHTML = `${playerName1} <br><br> "${Pl1XO}"`;
+    P2.innerHTML = `${playerName2} <br><br> "${Pl2XO}"`;
+    form.style.display = "none";
+    board.style.display = "grid";
+    const player1 = Player(playerName1, Pl1XO, 0);
+    const player2 = Player(playerName2, Pl2XO, 0);
 
     player1.play(player2);
 }
 
-function reset() {
+function resume() {
+    form.style.display = "none";
+    board.style.display = "grid";
     let cells = document.getElementsByClassName("cell");
     for (let i = 0; i < cells.length; i++) {
         cells[i].innerText = "";
     };
     gameboard = Array(9).fill("");
-    const listenMain = document.getElementById("main");
+    const listenMain = document.getElementById("board");
     listenMain.outerHTML = listenMain.outerHTML;
-    // const P1 = document.getElementById("P1");
     P1.innerHTML = "Player 1";
     P1.style.boxShadow = '';
     P1.style.backgroundColor = "#456bab";
-    // const P2 = document.getElementById("P2");
     P2.innerHTML = "Player 2";
     P2.style.boxShadow = '';
     P2.style.backgroundColor = "#456bab";
